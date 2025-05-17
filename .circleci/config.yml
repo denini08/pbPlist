@@ -15,6 +15,7 @@ jobs:
     steps:
       - checkout
       - run: sudo make install-deps
+      - run: python3 --version
       - run: make ci
       - store_test_results:
           path: htmlcov/
