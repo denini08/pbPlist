@@ -58,7 +58,7 @@ class pbRoot(MutableMapping):
 
     def __init__(self, *args, **kwargs):
         self.store = dict()
-        self.key_storage = list()
+        self.key_storage = set()
         self.update(dict(*args, **kwargs))  # use the free update to set keys
 
     def __internalKeyCheck(self, key): # pylint: disable=no-self-use
@@ -71,23 +71,21 @@ class pbRoot(MutableMapping):
         return self.store[key]
 
     def __setitem__(self, key, value):
-        if key not in self.key_storage:
-            self.key_storage.append(self.__internalKeyCheck(key))
+        self.key_storage.add(self.__internalKeyCheck(key))
         self.store[key] = value
 
     def __delitem__(self, key):
-        if key in self.key_storage:
-            self.key_storage.remove(key)
+        self.key_storage.discard(key)
         del self.store[key]
 
     def __iter__(self):
-        return self.key_storage.__iter__()
+        return iter(self.key_storage)
 
     def __len__(self):
-        return self.key_storage.__len__()
+        return len(self.key_storage)
 
     def __str__(self):
-        return self.store.__str__()
+        return str(self.store)
 
     def __contains__(self, item):
         return item in self.key_storage
@@ -102,7 +100,7 @@ class pbRoot(MutableMapping):
         return result
 
     def sortedKeys(self):
-        unsorted_keys = self.key_storage
+        unsorted_keys = list(self.key_storage)
         sorted_keys = sorted(unsorted_keys, key=cmp_to_key(KeySorter))
         can_sort = False
         if len(sorted_keys) > 0:
