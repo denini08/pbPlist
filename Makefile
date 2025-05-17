@@ -107,7 +107,9 @@ geminstall = @$(GEM) install $1
 
 pyenv_exec = @$(PYENV_CMD) $1 $2
 
-install-deps: 
+install-deps:
+	apt update
+	$(call pipthreeinstall,--upgrade pip) 
 	$(call pipthreeinstall,-r install_requirements.txt)
 	@$(DISPLAY_SEPARATOR)
 
